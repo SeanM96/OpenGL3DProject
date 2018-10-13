@@ -157,10 +157,12 @@
   <ItemGroup>
     <ClInclude Include="libs.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Wrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Wrapper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment_core.glsl" />

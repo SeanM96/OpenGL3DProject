@@ -1,5 +1,6 @@
 #include "libs.h"
 #include "Shader.h"
+#include "Wrapper.h"
 
 std::ifstream fs_stream("fragment_core.glsl");
 std::string fs_source((std::istreambuf_iterator<char>(fs_stream)),
@@ -9,45 +10,22 @@ std::ifstream vs_stream("vertex_core.glsl");
 std::string vs_source((std::istreambuf_iterator<char>(vs_stream)),
 (std::istreambuf_iterator<char>()));
 
+void updateInput(GLFWwindow* window) {
+	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GL_TRUE);
+}
+
 int main() {
 	//INIT GLFW
 	glfwInit();
 
-	//CREATE WINDOW
-	const int WINDOW_WIDTH = 1920;
-	const int WINDOW_HEIGHT = 1080;
-	int framebufferWidth = 0;
-	int framebufferHeight = 0;
-
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // FOR MAC OS
-	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Window", glfwGetPrimaryMonitor(), NULL);
-	glfwGetFramebufferSize(window, &framebufferWidth, &framebufferHeight);
-	glViewport(0,0,framebufferWidth, framebufferHeight);
-
-	glfwMakeContextCurrent(window);
-	
-	//INIT GLEW (NEEDS WINDOW AND OPENGL CONTEXT)
-	glewExperimental = GL_TRUE;
-
-	//Error Check
-	if (glewInit() != GLEW_OK) {
-		std::cout << "Error MAIN.cpp GLEW INIT FAILED";
-		glfwTerminate();
-	}
-	else {
-		std::cout << "Glew init successful" << "\n";
-	}
-
+	Wrapper mainWrapper = Wrapper();
 	Shader *mainShader = new Shader(vs_source.c_str(), fs_source.c_str());
 
 	//MAIN LOOP
-	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && !glfwWindowShouldClose(window)) {
+	while (!glfwWindowShouldClose(mainWrapper.getWindow())) {
 		//UPDATE INPUT
+		updateInput(mainWrapper.getWindow());
 		glfwPollEvents();
 		//UPDATE
 
@@ -60,12 +38,12 @@ int main() {
 		//draw
 
 		//END DRAW
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(mainWrapper.getWindow());
 		glFlush();
 	}
 
 	//END OF PROGRAM
-	glfwDestroyWindow(window);
+	glfwDestroyWindow(mainWrapper.getWindow());
 	delete mainShader;
 	glfwTerminate();
 
