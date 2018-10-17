@@ -38,7 +38,7 @@ void Wrapper::AddOptions() {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE); //Cull means to remove if we can't see it
 	glCullFace(GL_BACK); //This is what we are determining we can't see
-	glFrontFace(GL_CCW); //Front face counter-clock wise
+	glFrontFace(GL_CW); //Front face counter-clock wise
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC0_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
