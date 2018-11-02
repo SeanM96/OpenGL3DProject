@@ -1,6 +1,7 @@
 #include "libs.h"
 #include "Shader.h"
 #include "Wrapper.h"
+#include "Texture.h"
 
 using namespace glm;
 
@@ -95,31 +96,6 @@ int main() {
 
 	glBindVertexArray(0);
 
-	//TEXTURE INIT
-	int image_width = 0;
-	int image_height = 0;
-	unsigned char* image = SOIL_load_image("images/pusheen.png", &image_width, &image_height, NULL, SOIL_LOAD_RGBA);
-	GLuint texture0;
-	glGenTextures(1, &texture0);
-	glBindTexture(GL_TEXTURE_2D, texture0);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	if (image) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_width, image_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		std::cout << "IMAGE LOADED";
-	}
-	else {
-		std::cout << "Error loading image";
-	}
-	//Clean up, needed when stuff done with texture
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-	SOIL_free_image_data(image);
 
 	//Init matrices
 
@@ -153,10 +129,16 @@ int main() {
 	glUniformMatrix4fv(glGetUniformLocation(mainShader->myProgram, "ModelMatrix"), 1, GL_FALSE, value_ptr(ModelMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(mainShader->myProgram, "ViewMatrix"), 1, GL_FALSE, value_ptr(ViewMatrix));
 	glUniformMatrix4fv(glGetUniformLocation(mainShader->myProgram, "ProjectionMatrix"), 1, GL_FALSE, value_ptr(ProjectionMatrix));
-
+	
 	glUniform3fv(glGetUniformLocation(mainShader->myProgram, "lightPos"), 1, value_ptr(lightPos0));
+	glUniform3fv(glGetUniformLocation(mainShader->myProgram, "cameraPos"), 1, value_ptr(camPosition));
 
 	glUseProgram(0);
+
+	Texture texture("images/pusheen.png", GL_TEXTURE_2D);
+	Texture texture_smb("images/super-meat-boy.png", GL_TEXTURE_2D);
+	Texture texture_braid("images/braid.png", GL_TEXTURE_2D);
+
 
 	//MAIN LOOP
 	while (!glfwWindowShouldClose(mainWrapper.getWindow())) {
@@ -191,7 +173,7 @@ int main() {
 		glActiveTexture(GL_TEXTURE0);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glBindTexture(GL_TEXTURE_2D, texture0);
+		texture_smb.bindTexture(0, GL_TEXTURE_2D);
 
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, numOfIndices, GL_UNSIGNED_INT, 0);
@@ -202,8 +184,7 @@ int main() {
 
 		glBindVertexArray(0);
 		glUseProgram(0);
-		glActiveTexture(0);
-		glBindTexture(GL_TEXTURE_2D,0);
+		texture.unbindTexture(GL_TEXTURE_2D);
 	}
 
 	//END OF PROGRAM
