@@ -10,7 +10,7 @@ class Shader
 {
 public:
 	GLuint myProgram;
-
+	GLuint id;
 	Shader(const GLchar *, const GLchar *);
 	~Shader();
 
